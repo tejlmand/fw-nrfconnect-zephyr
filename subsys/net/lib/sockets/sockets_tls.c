@@ -34,6 +34,7 @@ LOG_MODULE_REGISTER(net_sock_tls, CONFIG_NET_SOCKETS_LOG_LEVEL);
 #include <mbedtls/ssl_cookie.h>
 #include <mbedtls/error.h>
 #include <mbedtls/debug.h>
+#include <mbedtls/platform.h>
 #endif /* CONFIG_MBEDTLS */
 
 #include "sockets_internal.h"
@@ -259,6 +260,11 @@ static int tls_init(struct device *unused)
 	static const unsigned char drbg_seed[] = "zephyr";
 	struct device *dev = NULL;
 
+#if defined(MBEDTLS_PLATFORM_SETUP_TEARDOWN_ALT)
+	static mbedtls_platform_context setup_context;
+#endif /* MBEDTLS_PLATFORM_SETUP_TEARDOWN_ALT */
+
+
 #if defined(CONFIG_ENTROPY_HAS_DRIVER)
 	dev = device_get_binding(CONFIG_ENTROPY_NAME);
 
@@ -275,12 +281,27 @@ static int tls_init(struct device *unused)
 
 	k_mutex_init(&context_lock);
 
+#if defined(MBEDTLS_PLATFORM_SETUP_TEARDOWN_ALT)
+	ret = mbedtls_platform_setup(&setup_context);
+	if (ret != 0)
+	{
+		mbedtls_platform_teardown(&setup_context);
+		return -EFAULT
+	}
+#endif /* MBEDTLS_PLATFORM_SETUP_TEARDOWN_ALT */
+
 	mbedtls_ctr_drbg_init(&tls_ctr_drbg);
 
-	ret = mbedtls_ctr_drbg_seed(&tls_ctr_drbg, tls_entropy_func, dev,
-				    drbg_seed, sizeof(drbg_seed));
+	ret = mbedtls_ctr_drbg_seed(&tls_ctr_drbg, tls_entropy_func,
+				    dev->driver_data, drbg_seed,
+				    sizeof(drbg_seed));
 	if (ret != 0) {
 		mbedtls_ctr_drbg_free(&tls_ctr_drbg);
+
+#if defined(MBEDTLS_PLATFORM_SETUP_TEARDOWN_ALT)
+		mbedtls_platform_teardown(&setup_context);
+#endif /* MBEDTLS_PLATFORM_SETUP_TEARDOWN_ALT */
+
 		NET_ERR("TLS entropy source initialization failed");
 		return -EFAULT;
 	}
