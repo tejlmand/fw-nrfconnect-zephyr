@@ -286,15 +286,14 @@ static int tls_init(struct device *unused)
 	if (ret != 0)
 	{
 		mbedtls_platform_teardown(&setup_context);
-		return -EFAULT
+		return -EFAULT;
 	}
 #endif /* MBEDTLS_PLATFORM_SETUP_TEARDOWN_ALT */
 
 	mbedtls_ctr_drbg_init(&tls_ctr_drbg);
 
-	ret = mbedtls_ctr_drbg_seed(&tls_ctr_drbg, tls_entropy_func,
-				    dev->driver_data, drbg_seed,
-				    sizeof(drbg_seed));
+	ret = mbedtls_ctr_drbg_seed(&tls_ctr_drbg, tls_entropy_func, dev,
+				    drbg_seed, sizeof(drbg_seed));
 	if (ret != 0) {
 		mbedtls_ctr_drbg_free(&tls_ctr_drbg);
 
