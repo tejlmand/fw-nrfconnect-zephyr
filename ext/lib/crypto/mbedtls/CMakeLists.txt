@@ -103,12 +103,13 @@ else()
   target_include_directories(${IMAGE}mbedTLS INTERFACE
 	${CONFIG_MBEDTLS_INSTALL_PATH}
 	)
-
-  zephyr_link_libraries(
-    mbedtls_external
-    -L${CONFIG_MBEDTLS_INSTALL_PATH}
-    gcc
-    )
+# TODO: We need a third option here, being able to set CONFIG_MBEDTLS but still treat that as a
+#       Zephyr library which will remove the need for mbedtls_external lib linking
+#  zephyr_link_libraries(
+#    mbedtls_external
+#    -L${CONFIG_MBEDTLS_INSTALL_PATH}
+#    gcc
+#    )
   # Lib mbedtls_external depends on libgcc (I assume?) so to allow
   # mbedtls_external to link with gcc we need to ensure it is placed
   # after mbedtls_external on the linkers command line.

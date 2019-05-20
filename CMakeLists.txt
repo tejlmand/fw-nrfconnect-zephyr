@@ -1023,7 +1023,9 @@ if(CONFIG_USERSPACE)
     set(NEWLIB_PART -l libc.a z_libc_partition)
   endif()
   if(CONFIG_MBEDTLS)
-    set(MBEDTLS_PART -l libext__lib__crypto__mbedtls.a k_mbedtls_partition)
+    # TODO: Better support upstream for doing this externally in a submodule, west / zephyr modules ?
+    set(MBEDTLS_PART -l libmbedtls_vanilla.a k_mbedtls_partition)
+#    set(MBEDTLS_PART -l libext__lib__crypto__mbedtls.a k_mbedtls_partition)
   endif()
 
   add_custom_command(
