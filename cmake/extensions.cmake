@@ -1339,8 +1339,10 @@ function(check_compiler_flag lang option ok)
 
   if(${${${ok}}})
     set(ret 1)
+    message("Checking ${option}; result: 1")
   else()
     set(ret 0)
+    message("Checking ${option}; result: 0")
   endif()
 
   set(${ok} ${ret} PARENT_SCOPE)
