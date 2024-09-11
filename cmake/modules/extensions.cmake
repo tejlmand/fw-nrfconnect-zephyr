@@ -2391,7 +2391,7 @@ endfunction()
 #            defined with a value.
 # APPEND: Flag indicated that the property should be appended to the existing
 #         value list for the property.
-# TARGET: Name of target on which to add the property (commonly: linker)
+# TARGET: Name of target on which to add the property (default: linker)
 # PROPERTY: Name of property with the value(s) following immediately after
 #           property name
 function(set_linker_property)
@@ -2402,6 +2402,10 @@ function(set_linker_property)
 
   if(LINKER_PROPERTY_APPEND)
    set(APPEND "APPEND")
+  endif()
+
+  if(NOT DEFINED LINKER_PROPERTY_TARGET)
+   set(LINKER_PROPERTY_TARGET "linker")
   endif()
 
   if(LINKER_PROPERTY_NO_CREATE)
@@ -2423,7 +2427,7 @@ endfunction()
 #
 # APPEND: Flag indicated that the property should be appended to the existing
 #         value list for the property.
-# TARGET: Name of target on which to add the property (commonly: linker)
+# TARGET: Name of target on which to add the property (default: linker)
 # PROPERTY: Name of property with the value(s) following immediately after
 #           property name
 function(check_set_linker_property)
@@ -2434,6 +2438,10 @@ function(check_set_linker_property)
 
   if(LINKER_PROPERTY_APPEND)
    set(APPEND "APPEND")
+  endif()
+
+  if(NOT DEFINED LINKER_PROPERTY_TARGET)
+   set(LINKER_PROPERTY_TARGET "linker")
   endif()
 
   list(GET LINKER_PROPERTY_PROPERTY 0 property)
